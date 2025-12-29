@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NutriCare</string>
+    <string name="title_activity_main">NutriCare</string>
+    <string name="package_name">com.nutricare.app</string>
+    <string name="custom_url_scheme">com.nutricare.app</string>
+</resources>

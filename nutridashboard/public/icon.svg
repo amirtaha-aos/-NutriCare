@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#10b981"/>
+  <g fill="white">
+    <!-- Heart -->
+    <path d="M256 420c-8 0-16-3-22-9L118 295c-40-40-40-105 0-145 40-40 105-40 145 0l-7 7 7-7c40-40 105-40 145 0 40 40 40 105 0 145L292 411c-6 6-14 9-22 9h-14z" opacity="0.9"/>
+    <!-- Leaf -->
+    <path d="M340 150c0 0-30 20-60 60s-40 80-40 80 30-20 60-60 40-80 40-80z" opacity="0.8"/>
+    <path d="M320 170c0 0 20 30 20 70s-20 60-20 60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>
