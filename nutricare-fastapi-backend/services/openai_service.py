@@ -24,39 +24,39 @@ class OpenAIService:
         Returns: detected foods with calories, macros, cooking details
         """
         prompt = f"""
-تو یک متخصص تغذیه و تحلیلگر تصویر غذا هستی. لطفاً این تصویر غذا را با دقت کامل تحلیل کن.
+You are an expert nutritionist and food image analyzer. Please analyze this food image with complete accuracy.
 
-اطلاعات زیر را به صورت JSON ارائه بده:
+Provide the following information in JSON format:
 
-1. لیست تمام غذاهایی که در تصویر می‌بینی (detected_foods)
-2. برای هر غذا:
-   - نام دقیق غذا (name)
-   - تخمین مقدار (estimated_amount: مثلاً "100 گرم", "یک لیوان", "2 عدد")
-   - کالری (calories)
-   - پروتئین (protein در گرم)
-   - کربوهیدرات (carbs در گرم)
-   - چربی (fats در گرم)
-   - فیبر (fiber در گرم)
-   - اطمینان (confidence بین 0 تا 1)
-   - توضیحات (description)
-   - نحوه پخت (cooking_method)
-   - نوع روغن استفاده شده (oil_type)
-   - مقدار روغن (oil_amount)
-   - افزودنی‌ها و چاشنی‌ها (additives: لیست)
-   - مواد اصلی (ingredients: لیست)
+1. List of all foods detected in the image (detected_foods)
+2. For each food:
+   - Exact food name (name)
+   - Estimated amount (estimated_amount: e.g., "100 grams", "1 cup", "2 pieces")
+   - Calories (calories)
+   - Protein (protein in grams)
+   - Carbohydrates (carbs in grams)
+   - Fats (fats in grams)
+   - Fiber (fiber in grams)
+   - Confidence (confidence between 0 and 1)
+   - Description (description)
+   - Cooking method (cooking_method)
+   - Type of oil used (oil_type)
+   - Amount of oil (oil_amount)
+   - Additives and seasonings (additives: list)
+   - Main ingredients (ingredients: list)
 
-3. مجموع تغذیه کل (total_nutrition):
-   - کالری کل
-   - پروتئین کل
-   - کربوهیدرات کل
-   - چربی کل
-   - فیبر کل
+3. Total nutrition (total_nutrition):
+   - Total calories
+   - Total protein
+   - Total carbohydrates
+   - Total fats
+   - Total fiber
 
-4. توصیه‌های تغذیه‌ای (recommendations: لیست رشته‌ها)
+4. Nutritional recommendations (recommendations: list of strings)
 
-خروجی فقط JSON باشد بدون توضیح اضافی.
+Output should be JSON only without additional explanation.
 
-وعده غذایی: {meal_type or 'نامشخص'}
+Meal type: {meal_type or 'Unknown'}
 """
 
         try:
@@ -96,7 +96,7 @@ class OpenAIService:
                     "fats": 0,
                     "fiber": 0,
                 },
-                "recommendations": [f"خطا در تحلیل تصویر: {str(e)}"],
+                "recommendations": [f"Error analyzing image: {str(e)}"],
             }
 
     async def analyze_food_portion(
@@ -106,22 +106,22 @@ class OpenAIService:
         Compare before and after images to calculate consumed percentage
         """
         prompt = """
-تو یک متخصص تحلیل تصویر غذا هستی. دو تصویر به تو داده شده:
-1. تصویر اول: غذا قبل از خوردن
-2. تصویر دوم: غذا بعد از خوردن
+You are an expert food image analyzer. You are given two images:
+1. First image: food before consumption
+2. Second image: food after consumption
 
-لطفاً موارد زیر را محاسبه کن و به صورت JSON خروجی بده:
+Please calculate the following and output as JSON:
 
-1. درصد مصرف شده (consumed_percentage: عدد بین 0 تا 100)
-2. توضیح (description: توضیح کوتاه درباره مقدار باقی‌مانده)
-3. تخمین کالری اولیه (initial_calories)
-4. تخمین کالری مصرف شده (consumed_calories)
-5. تخمین کالری باقی‌مانده (remaining_calories)
+1. Consumed percentage (consumed_percentage: number between 0 and 100)
+2. Description (description: brief explanation about remaining amount)
+3. Initial calorie estimate (initial_calories)
+4. Consumed calorie estimate (consumed_calories)
+5. Remaining calorie estimate (remaining_calories)
 
-خروجی فقط JSON باشد:
+Output should be JSON only:
 {
   "consumed_percentage": 65,
-  "description": "حدود دو سوم غذا مصرف شده",
+  "description": "About two-thirds of the food was consumed",
   "initial_calories": 500,
   "consumed_calories": 325,
   "remaining_calories": 175
@@ -164,7 +164,7 @@ class OpenAIService:
             print(f"Error in analyze_food_portion: {e}")
             return {
                 "consumed_percentage": 50,
-                "description": f"خطا در محاسبه: {str(e)}",
+                "description": f"Error in calculation: {str(e)}",
                 "initial_calories": 0,
                 "consumed_calories": 0,
                 "remaining_calories": 0,
@@ -175,36 +175,36 @@ class OpenAIService:
         Analyze lab test results from image
         """
         prompt = f"""
-تو یک پزشک و متخصص تغذیه هستی. یک تصویر آزمایش خون به تو داده شده.
+You are a doctor and nutrition expert. You are given a blood test image.
 
-اطلاعات کاربر:
-- سن: {user_info.get('age', 'نامشخص')}
-- جنسیت: {user_info.get('gender', 'نامشخص')}
-- وزن: {user_info.get('weight', 'نامشخص')} کیلوگرم
-- بیماری‌ها: {', '.join(user_info.get('diseases', []))}
+User information:
+- Age: {user_info.get('age', 'Unknown')}
+- Gender: {user_info.get('gender', 'Unknown')}
+- Weight: {user_info.get('weight', 'Unknown')} kg
+- Diseases: {', '.join(user_info.get('diseases', []))}
 
-لطفاً موارد زیر را تحلیل کن و به صورت JSON برگردان:
+Please analyze the following and return as JSON:
 
-1. نتایج آزمایش (test_results): لیستی از
-   - نام تست (test_name)
-   - مقدار (value)
-   - واحد (unit)
-   - وضعیت (status: "نرمال", "بالا", "پایین")
-   - محدوده نرمال (normal_range)
+1. Test results (test_results): list of
+   - Test name (test_name)
+   - Value (value)
+   - Unit (unit)
+   - Status (status: "Normal", "High", "Low")
+   - Normal range (normal_range)
 
-2. خلاصه وضعیت سلامت (health_summary)
+2. Health summary (health_summary)
 
-3. مشکلات شناسایی شده (identified_issues: لیست)
+3. Identified issues (identified_issues: list)
 
-4. توصیه‌های تغذیه‌ای (nutritional_recommendations: لیست)
+4. Nutritional recommendations (nutritional_recommendations: list)
 
-5. غذاهای پیشنهادی (recommended_foods: لیست)
+5. Recommended foods (recommended_foods: list)
 
-6. غذاهای ممنوع (foods_to_avoid: لیست)
+6. Foods to avoid (foods_to_avoid: list)
 
-7. سطح اولویت (priority_level: "کم", "متوسط", "بالا", "بحرانی")
+7. Priority level (priority_level: "Low", "Medium", "High", "Critical")
 
-خروجی فقط JSON باشد.
+Output should be JSON only.
 """
 
         try:
@@ -235,12 +235,12 @@ class OpenAIService:
             print(f"Error in analyze_lab_test: {e}")
             return {
                 "test_results": [],
-                "health_summary": f"خطا در تحلیل: {str(e)}",
+                "health_summary": f"Error in analysis: {str(e)}",
                 "identified_issues": [],
                 "nutritional_recommendations": [],
                 "recommended_foods": [],
                 "foods_to_avoid": [],
-                "priority_level": "نامشخص",
+                "priority_level": "Unknown",
             }
 
     async def analyze_medications(
@@ -253,39 +253,39 @@ class OpenAIService:
         user_diseases = ", ".join(user_info.get("diseases", []))
 
         prompt = f"""
-تو یک داروساز و متخصص تغذیه هستی.
+You are a pharmacist and nutrition expert.
 
-داروهای مصرفی کاربر:
+User's medications:
 {medications_str}
 
-بیماری‌های کاربر: {user_diseases or 'ندارد'}
+User's diseases: {user_diseases or 'None'}
 
-لطفاً موارد زیر را تحلیل کن و به صورت JSON برگردان:
+Please analyze the following and return as JSON:
 
-1. تداخلات دارویی (drug_interactions):
-   - دارو 1 (drug1)
-   - دارو 2 (drug2)
-   - نوع تداخل (interaction_type)
-   - شدت (severity: "کم", "متوسط", "بالا")
-   - توضیح (description)
+1. Drug interactions (drug_interactions):
+   - Drug 1 (drug1)
+   - Drug 2 (drug2)
+   - Interaction type (interaction_type)
+   - Severity (severity: "Low", "Medium", "High")
+   - Description (description)
 
-2. تداخل با غذا (food_interactions):
-   - دارو (medication)
-   - غذاهای ممنوع (foods_to_avoid)
-   - دلیل (reason)
+2. Food interactions (food_interactions):
+   - Medication (medication)
+   - Foods to avoid (foods_to_avoid)
+   - Reason (reason)
 
-3. بهترین زمان مصرف (timing_recommendations):
-   - دارو (medication)
-   - زمان پیشنهادی (recommended_time: "قبل از غذا", "با غذا", "بعد از غذا")
-   - فاصله از غذا (hours_from_meal)
+3. Timing recommendations (timing_recommendations):
+   - Medication (medication)
+   - Recommended time (recommended_time: "Before meal", "With meal", "After meal")
+   - Hours from meal (hours_from_meal)
 
-4. محدودیت‌های غذایی (dietary_restrictions: لیست رشته‌ها)
+4. Dietary restrictions (dietary_restrictions: list of strings)
 
-5. غذاهای پیشنهادی (recommended_foods: لیست رشته‌ها)
+5. Recommended foods (recommended_foods: list of strings)
 
-6. هشدارها (warnings: لیست رشته‌ها)
+6. Warnings (warnings: list of strings)
 
-خروجی فقط JSON باشد.
+Output should be JSON only.
 """
 
         try:
@@ -307,7 +307,7 @@ class OpenAIService:
                 "timing_recommendations": [],
                 "dietary_restrictions": [],
                 "recommended_foods": [],
-                "warnings": [f"خطا در تحلیل: {str(e)}"],
+                "warnings": [f"Error in analysis: {str(e)}"],
             }
 
     async def chat(
@@ -317,26 +317,26 @@ class OpenAIService:
         Chat with AI nutritionist
         """
         system_prompt = f"""
-تو یک متخصص تغذیه و سلامت با تجربه بالا هستی. به زبان فارسی پاسخ می‌دهی.
+You are an experienced nutrition and health expert. You respond in English.
 
-اطلاعات کاربر:
-- سن: {user_context.get('age', 'نامشخص')}
-- جنسیت: {user_context.get('gender', 'نامشخص')}
-- وزن: {user_context.get('weight', 'نامشخص')} کیلوگرم
-- قد: {user_context.get('height', 'نامشخص')} سانتی‌متر
-- BMI: {user_context.get('bmi', 'نامشخص')}
-- هدف: {user_context.get('goal', 'نامشخص')}
-- بیماری‌ها: {', '.join(user_context.get('diseases', []))}
-- حساسیت‌های غذایی: {', '.join(user_context.get('allergies', []))}
+User information:
+- Age: {user_context.get('age', 'Unknown')}
+- Gender: {user_context.get('gender', 'Unknown')}
+- Weight: {user_context.get('weight', 'Unknown')} kg
+- Height: {user_context.get('height', 'Unknown')} cm
+- BMI: {user_context.get('bmi', 'Unknown')}
+- Goal: {user_context.get('goal', 'Unknown')}
+- Diseases: {', '.join(user_context.get('diseases', []))}
+- Food allergies: {', '.join(user_context.get('allergies', []))}
 
-وظایف تو:
-1. پاسخ به سوالات تغذیه‌ای با دقت بالا
-2. ارائه توصیه‌های شخصی‌سازی شده
-3. کمک به دستیابی به اهداف سلامتی
-4. هشدار در مورد مشکلات احتمالی
-5. پاسخ‌های کوتاه، مفید و عملی
+Your responsibilities:
+1. Answer nutrition questions with high accuracy
+2. Provide personalized recommendations
+3. Help achieve health goals
+4. Warn about potential issues
+5. Provide short, useful, and practical responses
 
-اگر سوال پزشکی جدی است، توصیه کن که به پزشک مراجعه کند.
+If the question is a serious medical concern, recommend consulting a doctor.
 """
 
         messages = [{"role": "system", "content": system_prompt}]
@@ -352,61 +352,61 @@ class OpenAIService:
 
         except Exception as e:
             print(f"Error in chat: {e}")
-            return f"متأسفم، خطایی رخ داد: {str(e)}"
+            return f"Sorry, an error occurred: {str(e)}"
 
     async def generate_meal_plan(self, user_info: Dict, preferences: Dict) -> Dict:
         """
         Generate personalized meal plan
         """
         prompt = f"""
-تو یک متخصص تغذیه و برنامه‌ریز غذایی هستی.
+You are a nutrition expert and meal planner.
 
-اطلاعات کاربر:
-- سن: {user_info.get('age')}
-- جنسیت: {user_info.get('gender')}
-- وزن: {user_info.get('weight')} کیلوگرم
-- قد: {user_info.get('height')} سانتی‌متر
-- سطح فعالیت: {user_info.get('activity_level')}
-- هدف: {user_info.get('goal')}
-- کالری روزانه هدف: {user_info.get('daily_calorie_target')}
-- بیماری‌ها: {', '.join(user_info.get('diseases', []))}
+User information:
+- Age: {user_info.get('age')}
+- Gender: {user_info.get('gender')}
+- Weight: {user_info.get('weight')} kg
+- Height: {user_info.get('height')} cm
+- Activity level: {user_info.get('activity_level')}
+- Goal: {user_info.get('goal')}
+- Daily calorie target: {user_info.get('daily_calorie_target')}
+- Diseases: {', '.join(user_info.get('diseases', []))}
 
-اولویت‌های کاربر:
-- بودجه: {preferences.get('budget')} {preferences.get('currency', 'تومان')}
-- شهر: {preferences.get('location', {}).get('city')}
-- کشور: {preferences.get('location', {}).get('country')}
-- مواد موجود در خانه: {', '.join(preferences.get('available_items', []))}
-- محدودیت‌های غذایی: {', '.join(preferences.get('dietary_restrictions', []))}
-- مدت زمان: {preferences.get('duration_days', 7)} روز
+User preferences:
+- Budget: {preferences.get('budget')} {preferences.get('currency', 'USD')}
+- City: {preferences.get('location', {}).get('city')}
+- Country: {preferences.get('location', {}).get('country')}
+- Available items at home: {', '.join(preferences.get('available_items', []))}
+- Dietary restrictions: {', '.join(preferences.get('dietary_restrictions', []))}
+- Duration: {preferences.get('duration_days', 7)} days
 
-لطفاً یک برنامه غذایی کامل {preferences.get('duration_days', 7)} روزه طراحی کن که شامل:
+Please design a complete {preferences.get('duration_days', 7)}-day meal plan that includes:
 
-1. برنامه روزانه (daily_plans): لیستی از
-   - day (شماره روز)
-   - date (تاریخ)
+1. Daily plans (daily_plans): list of
+   - day (day number)
+   - date (date)
    - meals:
-     - breakfast: {name, ingredients, calories, protein, carbs, fats, cost, recipe}
-     - lunch: {همین ساختار}
-     - dinner: {همین ساختار}
-     - snacks: لیست میان‌وعده‌ها
+     - breakfast: {{name, ingredients, calories, protein, carbs, fats, cost, recipe}}
+     - lunch: {{same structure}}
+     - dinner: {{same structure}}
+     - snacks: list of snacks
 
-2. لیست خرید (shopping_list):
-   - proteins: لیست (مثلاً "مرغ: 2 کیلو - 180,000 تومان")
-   - vegetables: لیست سبزیجات
-   - grains: لیست غلات
-   - dairy: لبنیات
-   - others: سایر موارد
-   - total_cost: هزینه کل
+2. Shopping list (shopping_list):
+   - proteins: list (e.g., "Chicken: 2 kg - $15")
+   - vegetables: list of vegetables
+   - grains: list of grains
+   - dairy: dairy products
+   - others: other items
+   - total_cost: total cost
 
-3. خلاصه تغذیه‌ای (nutritional_summary):
+3. Nutritional summary (nutritional_summary):
    - daily_avg_calories
    - daily_avg_protein
    - daily_avg_carbs
    - daily_avg_fats
 
-4. توصیه‌ها (recommendations: لیست)
+4. Recommendations (recommendations: list)
 
-خروجی فقط JSON باشد. قیمت‌ها باید واقع‌بینانه و مناسب {preferences.get('location', {}).get('city')} باشند.
+Output should be JSON only. Prices should be realistic and appropriate for {preferences.get('location', {}).get('city')}.
 """
 
         try:
@@ -427,7 +427,7 @@ class OpenAIService:
                 "daily_plans": [],
                 "shopping_list": {},
                 "nutritional_summary": {},
-                "recommendations": [f"خطا در تولید برنامه: {str(e)}"],
+                "recommendations": [f"Error generating plan: {str(e)}"],
             }
 
     async def generate_workout_plan(self, user_info: Dict) -> Dict:
@@ -438,48 +438,48 @@ class OpenAIService:
         bmi = user_info.get("bmi")
         age = user_info.get("age")
         fitness_level = user_info.get("fitness_level", "beginner")
-        goal = user_info.get("goal", "تناسب اندام")
+        goal = user_info.get("goal", "Fitness")
 
         # Determine focus based on gender
         if gender == "female":
-            focus_areas = "پیلاتس، یوگا، آئروبیک، کاردیو، تمرینات قدرتی سبک"
+            focus_areas = "Pilates, Yoga, Aerobics, Cardio, Light strength training"
         else:
-            focus_areas = "بدنسازی، وزنه، کراس‌فیت، کاردیو، تمرینات قدرتی"
+            focus_areas = "Bodybuilding, Weightlifting, CrossFit, Cardio, Strength training"
 
         prompt = f"""
-تو یک مربی ورزشی حرفه‌ای هستی.
+You are a professional fitness trainer.
 
-اطلاعات کاربر:
-- سن: {age}
-- جنسیت: {gender}
-- وزن: {user_info.get('weight')} کیلوگرم
+User information:
+- Age: {age}
+- Gender: {gender}
+- Weight: {user_info.get('weight')} kg
 - BMI: {bmi}
-- سطح آمادگی: {fitness_level}
-- هدف: {goal}
+- Fitness level: {fitness_level}
+- Goal: {goal}
 
-زمینه‌های تمرکز بر اساس جنسیت: {focus_areas}
+Focus areas based on gender: {focus_areas}
 
-لطفاً یک برنامه ورزشی هفتگی طراحی کن که شامل:
+Please design a weekly workout plan that includes:
 
-1. ورزش‌های پیشنهادی (recommended_activities): لیست 4-5 ورزش مناسب
+1. Recommended activities (recommended_activities): list of 4-5 suitable exercises
 
-2. برنامه هفتگی (weekly_plan): لیستی از
-   - day (نام روز فارسی)
-   - exercises: لیستی از
-     - name (نام ورزش فارسی)
-     - duration_minutes (مدت زمان)
-     - intensity ("کم", "متوسط", "زیاد")
-     - calories_burned (تخمین کالری سوخته)
-     - description (توضیح کوتاه)
-     - video_url (لینک یوتیوب - اختیاری)
+2. Weekly plan (weekly_plan): list of
+   - day (day name in English)
+   - exercises: list of
+     - name (exercise name in English)
+     - duration_minutes (duration)
+     - intensity ("Low", "Medium", "High")
+     - calories_burned (estimated calories burned)
+     - description (brief description)
+     - video_url (YouTube link - optional)
 
-3. نکات ایمنی (safety_tips: لیست)
+3. Safety tips (safety_tips: list)
 
-4. توصیه‌ها (recommendations: لیست)
+4. Recommendations (recommendations: list)
 
-5. پیشرفت مورد انتظار (expected_progress: رشته)
+5. Expected progress (expected_progress: string)
 
-خروجی فقط JSON باشد. برنامه باید متناسب با جنسیت {gender} و BMI {bmi} باشد.
+Output should be JSON only. Plan should be appropriate for gender {gender} and BMI {bmi}.
 """
 
         try:
@@ -500,8 +500,8 @@ class OpenAIService:
                 "recommended_activities": [],
                 "weekly_plan": [],
                 "safety_tips": [],
-                "recommendations": [f"خطا در تولید برنامه: {str(e)}"],
-                "expected_progress": "نامشخص",
+                "recommendations": [f"Error generating plan: {str(e)}"],
+                "expected_progress": "Unknown",
             }
 
 

@@ -1,0 +1,84 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'nutricare-mobile/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: nutricare-mobile/package-lock.json
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install dependencies
+      working-directory: nutricare-mobile
+      run: npm ci
+
+    - name: Make gradlew executable
+      working-directory: nutricare-mobile/android
+      run: chmod +x gradlew
+
+    - name: Build APK
+      working-directory: nutricare-mobile/android
+      run: ./gradlew assembleRelease
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: nutricare-release-apk
+        path: nutricare-mobile/android/app/build/outputs/apk/release/app-release.apk
+
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: NutriCare v1.0.${{ github.run_number }}
+        body: |
+          # 🥗 NutriCare - دستیار هوشمند تغذیه
+
+          ## ✨ ویژگی‌ها
+          - تحلیل تصویر غذا با GPT-4 Vision
+          - برنامه غذایی هوشمند
+          - برنامه ورزشی شخصی
+          - AI Chatbot مشاوره تغذیه
+          - ردیابی کالری و سلامتی
+
+          ## 📲 نصب
+          1. دانلود APK از پایین
+          2. نصب روی اندروید
+          3. ثبت‌نام و استفاده
+
+          ## ⚙️ نیازمندی‌ها
+          - Android 5.0+ (API 21+)
+          - 100MB فضای خالی
+          - اتصال اینترنت
+        files: |
+          nutricare-mobile/android/app/build/outputs/apk/release/app-release.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
