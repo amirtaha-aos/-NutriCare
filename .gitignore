@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+android/app/build/
+android/build/
+android/.gradle/
+ios/build/
+ios/Pods/
+*.apk
+*.aab
+*.ipa
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Environment
+.env
+.env.local
+.env.development
+.env.production
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Metro
+.metro-health-check*
+
+# Testing
+coverage/
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+
+# React Native
+.buckconfig
+buck-out/
+
+# Android
+android/local.properties
+android/*.keystore
+!android/app/debug.keystore
+
+# iOS
+ios/*.xcworkspace
+ios/*.xcodeproj/xcuserdata
+ios/DerivedData/
+
+# Gradle
+.gradle/
+gradle-wrapper.jar
+
+# Backend
+backend/node_modules/
+backend/.env
+backend/logs/
